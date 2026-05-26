@@ -199,8 +199,21 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
+    .title-slide .studio {
+      margin-top: 0.8em;
+      font-size: 0.85em;
+      color: var(--fg-soft);
+      letter-spacing: 0.04em;
+    }
+    .title-slide .studio strong {
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+    }
     .title-slide .speaker {
-      margin-top: 1.5em;
+      margin-top: 1.2em;
       font-size: 0.8em;
       color: var(--fg-soft);
     }
@@ -439,11 +452,13 @@
     }
     .title-slide .badge,
     .title-slide .subtitle,
+    .title-slide .studio,
     .title-slide .speaker {
       animation: fadeUp 0.8s ease-out both;
     }
     .title-slide .subtitle { animation-delay: 0.3s; }
-    .title-slide .speaker  { animation-delay: 0.5s; }
+    .title-slide .studio   { animation-delay: 0.5s; }
+    .title-slide .speaker  { animation-delay: 0.7s; }
 
     /* Reveal.js progress bar — neon */
     .reveal .progress {
@@ -631,6 +646,7 @@
     <div class="badge">WORKSHOP · 15 PHÚT</div>
     <h1>Codex + Oh My Game Kit</h1>
     <div class="subtitle">AI Coding Workflow cho Game Dev</div>
+    <div class="studio">dành riêng cho <strong>The One Game Studio</strong></div>
     <div class="speaker">
       <div><strong>Trần Việt Anh</strong></div>
       <div class="handle">@tranvietanh0</div>
