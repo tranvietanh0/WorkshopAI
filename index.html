@@ -1,0 +1,1212 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1280, initial-scale=1" />
+  <title>Codex + Oh My Game Kit — Workshop AI cho Game Dev</title>
+
+  <!-- Reveal.js core -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme" />
+  <!-- Code highlight -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css" />
+
+  <style>
+    :root {
+      --neon-cyan: #00ffd1;
+      --neon-purple: #b97aff;
+      --neon-pink:   #ff5fa2;
+      --bg-deep:     #07070b;
+      --bg-panel:    #11131a;
+      --fg-soft:     #c9d1d9;
+    }
+
+    .reveal {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--fg-soft);
+    }
+
+    body, .reveal-viewport {
+      background: radial-gradient(ellipse at top, #14182a 0%, var(--bg-deep) 60%) !important;
+      overflow: hidden;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 255, 209, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 209, 0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridDrift 20s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Floating orbs (ambient) */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 30%, rgba(0, 255, 209, 0.10) 0%, transparent 25%),
+        radial-gradient(circle at 85% 70%, rgba(185, 122, 255, 0.12) 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, rgba(255, 95, 162, 0.06) 0%, transparent 30%);
+      animation: orbFloat 15s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .reveal { position: relative; z-index: 1; }
+
+    @keyframes gridDrift {
+      0%   { background-position: 0 0, 0 0; }
+      100% { background-position: 50px 50px, 50px 50px; }
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%      { transform: translate(20px, -30px) scale(1.05); }
+      66%      { transform: translate(-15px, 20px) scale(0.95); }
+    }
+
+    @keyframes neonPulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(0, 255, 209, 0.25), 0 0 40px rgba(0, 255, 209, 0.15); }
+      50%      { text-shadow: 0 0 30px rgba(0, 255, 209, 0.45), 0 0 60px rgba(185, 122, 255, 0.25); }
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    @keyframes glowSweep {
+      0%   { box-shadow: 0 0 20px rgba(0, 255, 209, 0.15); }
+      50%  { box-shadow: 0 0 30px rgba(0, 255, 209, 0.35), 0 0 50px rgba(185, 122, 255, 0.15); }
+      100% { box-shadow: 0 0 20px rgba(0, 255, 209, 0.15); }
+    }
+
+    @keyframes blink {
+      0%, 49%   { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes scanline {
+      0%   { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    @keyframes flowPulse {
+      0%, 100% { color: var(--neon-purple); transform: scale(1); }
+      50%      { color: var(--neon-cyan); transform: scale(1.3); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      color: #fff;
+    }
+
+    .reveal h1 {
+      font-size: 2.6em;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 6s ease-in-out infinite, neonPulse 3s ease-in-out infinite;
+    }
+
+    .reveal h2 {
+      font-size: 1.8em;
+      color: #fff;
+      border-left: 4px solid var(--neon-cyan);
+      padding-left: 0.4em;
+      text-align: left;
+      position: relative;
+      box-shadow: -4px 0 20px rgba(0, 255, 209, 0.3);
+      animation: fadeUp 0.6s ease-out;
+    }
+    .reveal h2::after {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--neon-cyan);
+      filter: blur(8px);
+      opacity: 0.7;
+    }
+
+    .reveal h3 {
+      font-size: 1.2em;
+      color: var(--neon-cyan);
+    }
+
+    .reveal section {
+      text-align: left;
+    }
+
+    .reveal section.title-slide {
+      text-align: center;
+    }
+
+    .reveal a { color: var(--neon-cyan); }
+
+    .reveal pre {
+      box-shadow: 0 0 0 1px rgba(0, 255, 209, 0.2), 0 10px 40px rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      background: var(--bg-panel);
+      font-size: 0.55em;
+    }
+    .reveal pre code {
+      border-radius: 10px;
+      padding: 1em 1.2em;
+      max-height: 520px;
+    }
+
+    .reveal code {
+      color: var(--neon-cyan);
+      background: rgba(0, 255, 209, 0.08);
+      padding: 0 6px;
+      border-radius: 4px;
+    }
+
+    .reveal ul, .reveal ol { margin-left: 1.2em; }
+    .reveal li { margin: 0.35em 0; }
+    .reveal li::marker { color: var(--neon-purple); }
+
+    /* Title slide */
+    .title-slide .subtitle {
+      color: var(--neon-purple);
+      font-size: 1.1em;
+      margin-top: 0.5em;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .title-slide .speaker {
+      margin-top: 1.5em;
+      font-size: 0.8em;
+      color: var(--fg-soft);
+    }
+    .title-slide .speaker .handle {
+      color: var(--neon-cyan);
+    }
+    .title-slide .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 999px;
+      color: var(--neon-cyan);
+      font-size: 0.55em;
+      letter-spacing: 0.2em;
+      margin-bottom: 1em;
+    }
+
+    /* Cards / panels */
+    .card {
+      background: var(--bg-panel);
+      border: 1px solid rgba(185, 122, 255, 0.25);
+      border-radius: 12px;
+      padding: 1em 1.2em;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 209, 0.08), transparent);
+      transition: left 0.6s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 255, 209, 0.2);
+    }
+    .card:hover::before { left: 100%; }
+    .present .card { animation: fadeUp 0.6s ease-out both; }
+    .present .card:nth-child(2) { animation-delay: 0.15s; }
+    .present .card:nth-child(3) { animation-delay: 0.3s; }
+    .present .card:nth-child(4) { animation-delay: 0.45s; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.8em;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.55em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-right: 6px;
+    }
+    .pill.cyan { background: rgba(0, 255, 209, 0.15); color: var(--neon-cyan); }
+    .pill.purple { background: rgba(185, 122, 255, 0.18); color: var(--neon-purple); }
+    .pill.pink { background: rgba(255, 95, 162, 0.18); color: var(--neon-pink); }
+
+    /* Terminal mockup */
+    .term {
+      background: #0b0d12;
+      border: 1px solid rgba(0, 255, 209, 0.25);
+      border-radius: 10px;
+      padding: 1.4em 1em 0.9em;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.5em;
+      color: var(--fg-soft);
+      line-height: 1.6;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    /* terminal traffic-light dots */
+    .term::before {
+      content: "";
+      position: absolute;
+      top: 0.45em;
+      left: 0.7em;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #ff5f56;
+      box-shadow: 16px 0 0 #ffbd2e, 32px 0 0 #27c93f;
+    }
+    /* scanline overlay */
+    .term::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 30%;
+      background: linear-gradient(180deg, rgba(0, 255, 209, 0.08), transparent);
+      animation: scanline 4s linear infinite;
+      pointer-events: none;
+    }
+    .present .term { animation: glowSweep 3s ease-in-out infinite, fadeUp 0.6s ease-out; }
+    /* Blinking caret on last terminal line */
+    .term > div:last-child::after {
+      content: "▊";
+      color: var(--neon-cyan);
+      margin-left: 4px;
+      animation: blink 1s steps(1) infinite;
+    }
+    .term .ps1 { color: var(--neon-cyan); }
+    .term .you { color: var(--neon-purple); }
+    .term .ai  { color: #ffd479; }
+    .term .ok  { color: #6dffb0; }
+    .term .err { color: var(--neon-pink); }
+    .term .dim { color: #6a7280; }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6em;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.65em;
+      margin: 1em 0;
+      flex-wrap: wrap;
+    }
+    .flow .node {
+      padding: 0.7em 1.1em;
+      border-radius: 10px;
+      border: 1px solid var(--neon-cyan);
+      background: rgba(0, 255, 209, 0.06);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(0, 255, 209, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: glowSweep 4s ease-in-out infinite;
+    }
+    .flow .node:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 40px rgba(0, 255, 209, 0.4);
+    }
+    .flow .arrow {
+      color: var(--neon-purple);
+      font-size: 1.4em;
+      animation: flowPulse 1.8s ease-in-out infinite;
+    }
+    .flow .arrow:nth-child(4) { animation-delay: 0.3s; }
+    .flow .arrow:nth-child(6) { animation-delay: 0.6s; }
+    .flow .arrow:nth-child(8) { animation-delay: 0.9s; }
+
+    .footnote {
+      position: absolute;
+      bottom: 6px;
+      right: 16px;
+      font-size: 0.4em;
+      color: #555a66;
+      letter-spacing: 0.1em;
+    }
+
+    .check { color: var(--neon-cyan); }
+    .cross { color: var(--neon-pink); }
+
+    /* Big number */
+    .big {
+      font-size: 3em;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(0, 255, 209, 0.5));
+    }
+
+    /* Badge — animated border */
+    .badge {
+      position: relative;
+      overflow: hidden;
+    }
+    .badge::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 209, 0.3), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Pills — subtle pulse */
+    .pill {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 255, 209, 0.25);
+    }
+
+    /* Bullet list items — staggered fade-in when slide active */
+    .present .reveal section ul li,
+    .present .reveal section ol li {
+      animation: fadeUp 0.5s ease-out both;
+    }
+    .present ul li:nth-child(1), .present ol li:nth-child(1) { animation-delay: 0.1s; }
+    .present ul li:nth-child(2), .present ol li:nth-child(2) { animation-delay: 0.2s; }
+    .present ul li:nth-child(3), .present ol li:nth-child(3) { animation-delay: 0.3s; }
+    .present ul li:nth-child(4), .present ol li:nth-child(4) { animation-delay: 0.4s; }
+    .present ul li:nth-child(5), .present ol li:nth-child(5) { animation-delay: 0.5s; }
+    .present ul li:nth-child(6), .present ol li:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Code blocks with shimmer top border */
+    .reveal pre {
+      position: relative;
+    }
+    .reveal pre::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+
+    /* Title slide enhancements */
+    .title-slide h1 {
+      animation: gradientShift 6s ease-in-out infinite, neonPulse 3s ease-in-out infinite, fadeUp 0.8s ease-out;
+    }
+    .title-slide .badge,
+    .title-slide .subtitle,
+    .title-slide .speaker {
+      animation: fadeUp 0.8s ease-out both;
+    }
+    .title-slide .subtitle { animation-delay: 0.3s; }
+    .title-slide .speaker  { animation-delay: 0.5s; }
+
+    /* Reveal.js progress bar — neon */
+    .reveal .progress {
+      color: var(--neon-cyan);
+      height: 4px;
+    }
+    .reveal .progress span {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      box-shadow: 0 0 10px rgba(0, 255, 209, 0.5);
+    }
+
+    /* Slide number — neon */
+    .reveal .slide-number {
+      background: rgba(0, 255, 209, 0.1);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 255, 209, 0.3);
+      border-radius: 4px;
+    }
+
+    /* ── Spotlight slide (/goal) ── */
+    .spotlight {
+      text-align: center;
+    }
+    .spotlight .new-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+      color: #fff;
+      font-size: 0.55em;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.5em;
+      animation: neonPulse 2s ease-in-out infinite;
+    }
+    .spotlight .cmd {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 2.2em;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 18px rgba(0, 255, 209, 0.4));
+      margin: 0.1em 0;
+    }
+    .spotlight .tagline {
+      color: var(--fg-soft);
+      font-size: 0.9em;
+      margin-bottom: 0.6em;
+    }
+    .syntax-list {
+      text-align: left;
+      background: var(--bg-panel);
+      border: 1px solid rgba(0, 255, 209, 0.25);
+      border-radius: 10px;
+      padding: 0.7em 1em;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.55em;
+      margin-top: 0.6em;
+    }
+    .syntax-list .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1em;
+      padding: 0.25em 0;
+      border-bottom: 1px dashed rgba(0, 255, 209, 0.1);
+    }
+    .syntax-list .row:last-child { border-bottom: none; }
+    .syntax-list code {
+      color: var(--neon-cyan);
+      background: rgba(0, 255, 209, 0.08);
+    }
+    .syntax-list .desc { color: var(--fg-soft); }
+
+    .usecase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.6em;
+      margin-top: 0.6em;
+    }
+    .usecase {
+      background: rgba(185, 122, 255, 0.08);
+      border: 1px solid rgba(185, 122, 255, 0.3);
+      border-radius: 8px;
+      padding: 0.5em 0.7em;
+      font-size: 0.55em;
+      text-align: left;
+      color: var(--fg-soft);
+    }
+    .usecase strong { color: var(--neon-purple); display: block; margin-bottom: 0.2em; }
+
+    /* ── Tips grid (slide 9) ── */
+    .grid-tips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.7em;
+      margin-top: 0.8em;
+    }
+    .tip {
+      background: var(--bg-panel);
+      border: 1px solid rgba(0, 255, 209, 0.2);
+      border-radius: 10px;
+      padding: 0.7em 0.9em;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .tip:hover {
+      transform: translateY(-3px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 6px 30px rgba(0, 255, 209, 0.25);
+    }
+    .tip .tip-num {
+      position: absolute;
+      top: 0.4em;
+      right: 0.6em;
+      font-size: 1.6em;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      opacity: 0.4;
+      line-height: 1;
+    }
+    .tip h3 {
+      font-size: 0.85em !important;
+      color: var(--neon-cyan) !important;
+      margin: 0 0 0.3em !important;
+      padding-right: 1.4em;
+    }
+    .tip p {
+      font-size: 0.6em !important;
+      margin: 0;
+      line-height: 1.4;
+      color: var(--fg-soft);
+    }
+    .tip code {
+      font-size: 0.95em;
+    }
+
+    /* ── Demo slides (6/7/8) — tighten layout ── */
+    .demo-slide { text-align: center; }
+    .demo-slide h1 {
+      font-size: 1.7em !important;
+      margin: 0.2em 0 0.3em !important;
+    }
+    .demo-slide .badge { margin-bottom: 0.2em; }
+    .demo-slide .intro {
+      color: var(--fg-soft);
+      font-size: 0.75em;
+      margin: 0.3em 0 0.6em;
+    }
+    .demo-slide .grid-2 { margin-top: 0.5em; gap: 0.7em; }
+    .demo-slide .card { padding: 0.6em 0.9em; }
+    .demo-slide .card h3 {
+      font-size: 0.85em;
+      margin: 0 0 0.3em;
+    }
+    .demo-slide .card ul,
+    .demo-slide .card ol,
+    .demo-slide .card p {
+      font-size: 0.55em !important;
+      margin: 0.2em 0;
+      line-height: 1.4;
+    }
+    .demo-slide .card li { margin: 0.15em 0; }
+    .demo-slide .term { font-size: 0.4em; margin-top: 0.5em; }
+    .demo-slide pre { margin: 0.4em 0 !important; }
+    .demo-slide pre code { font-size: 0.85em !important; padding: 0.6em 0.9em !important; max-height: 140px !important; }
+    .demo-slide .cta {
+      margin-top: 0.6em;
+      font-size: 0.6em;
+      color: var(--neon-cyan);
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+  <!-- ============================================ -->
+  <!-- Slide 1: TITLE                                -->
+  <!-- ============================================ -->
+  <section class="title-slide" data-background-gradient="radial-gradient(circle at 30% 20%, rgba(0,255,209,0.15), transparent 60%), radial-gradient(circle at 70% 80%, rgba(185,122,255,0.18), transparent 60%)">
+    <div class="badge">WORKSHOP · 15 PHÚT</div>
+    <h1>Codex + Oh My Game Kit</h1>
+    <div class="subtitle">AI Coding Workflow cho Game Dev</div>
+    <div class="speaker">
+      <div><strong>Trần Việt Anh</strong></div>
+      <div class="handle">@tranvietanh0</div>
+    </div>
+    <aside class="notes">
+      Chào mọi người. Hôm nay tôi sẽ chia sẻ cách tôi dùng Codex cho game dev,
+      cụ thể qua repo Oh My Game Kit. 15 phút, ~70% là demo thật.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 2: HOOK                                 -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Game dev đang tốn thời gian vào đâu?</h2>
+    <div class="grid-2" style="margin-top: 1em;">
+      <div class="card">
+        <h3>🔁 Lặp lại</h3>
+        <ul>
+          <li>Object pool, state machine, signal bus</li>
+          <li>Boilerplate Unity/Cocos giống nhau giữa các project</li>
+          <li>Setup scene, prefab, addressables…</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📚 Lookup</h3>
+        <ul>
+          <li>Đọc docs DOTS, URP, Cocos Playable</li>
+          <li>Tìm best practice của 1 pattern</li>
+          <li>Nhớ API name của package mới</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top: 1em; text-align: center; color: var(--neon-cyan);">
+      → AI có thể đảm nhận phần lớn việc này <em>nếu</em> được cung cấp đúng <strong>context</strong>.
+    </p>
+    <aside class="notes">
+      Ai trong phòng từng viết object pool quá 3 lần? Đó là tín hiệu cần AI.
+      Nhưng AI bình thường (ChatGPT) không biết convention của TEAM bạn.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 3: CODEX là gì                          -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Codex là gì?</h2>
+    <div class="grid-2">
+      <div>
+        <ul>
+          <li><strong>OpenAI Codex</strong> — agent code chạy trong terminal / IDE</li>
+          <li>Đọc &amp; <strong>sửa file trực tiếp</strong> trong repo của bạn</li>
+          <li>Chạy lệnh shell, build, test → tự loop đến khi xong</li>
+          <li>Khác ChatGPT: <span class="pill cyan">có tay</span> chứ không chỉ chat</li>
+        </ul>
+        <p style="margin-top: 0.8em;">
+          <span class="pill purple">CLI</span>
+          <span class="pill purple">Desktop</span>
+          <span class="pill purple">IDE Extension</span>
+        </p>
+      </div>
+      <div class="term">
+        <div><span class="ps1">~/game-project $</span> codex</div>
+        <div class="dim">Codex CLI v0.x · session started</div>
+        <div>&nbsp;</div>
+        <div><span class="you">▸ thêm object pool cho enemy spawner</span></div>
+        <div><span class="ai">⠋ reading Assets/Scripts/Spawner.cs</span></div>
+        <div><span class="ai">⠙ writing Assets/Scripts/EnemyPool.cs</span></div>
+        <div><span class="ai">⠹ running Unity test runner…</span></div>
+        <div><span class="ok">✓ 12 tests passed</span></div>
+      </div>
+    </div>
+    <aside class="notes">
+      Điểm khác biệt cốt lõi: Codex có file-system access + shell access.
+      Nó không "đề xuất" — nó LÀM. Bạn review diff.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 4: Oh My Game Kit                       -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Oh My Game Kit là gì?</h2>
+    <p><code>oh-my-game-kit</code> — bộ <strong>skills</strong> &amp; <strong>agents</strong> Codex-native cho game dev.</p>
+    <div class="grid-3" style="margin-top: 0.8em;">
+      <div class="card">
+        <h3>🎮 Unity</h3>
+        <ul style="font-size: 0.7em;">
+          <li>DOTS / ECS</li>
+          <li>URP / Rendering</li>
+          <li>Mobile, UI, Audio</li>
+          <li>Editor MCP bridge</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🕹️ Cocos</h3>
+        <ul style="font-size: 0.7em;">
+          <li>Cocos Creator</li>
+          <li>Playable ads</li>
+          <li>Signal bus, FSM</li>
+          <li>Object pooling</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🧠 Core</h3>
+        <ul style="font-size: 0.7em;">
+          <li>Architecture skills</li>
+          <li>Testing, networking</li>
+          <li>Agent templates</li>
+          <li>Presets &amp; modules</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top: 0.8em; font-size: 0.75em;">
+      Cài 1 lệnh → Codex tự load skills phù hợp với task.
+    </p>
+    <pre><code class="language-bash" data-trim>
+# One-line install (Windows PowerShell)
+irm https://raw.githubusercontent.com/tranvietanh0/oh-my-game-kit/release/scripts/install.ps1 | iex
+    </code></pre>
+    <aside class="notes">
+      Mỗi skill là 1 file markdown nhỏ + frontmatter. Codex đọc, áp dụng đúng convention.
+      Đây là cách team chuẩn hoá AI workflow — không phải mỗi dev tự prompt khác nhau.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 5: Workflow                             -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Workflow tổng quan</h2>
+    <div class="flow">
+      <div class="node">Prompt của bạn</div>
+      <div class="arrow">→</div>
+      <div class="node">Codex</div>
+      <div class="arrow">+</div>
+      <div class="node">Skill <code>omg-*</code></div>
+      <div class="arrow">→</div>
+      <div class="node">Đọc / Sửa code</div>
+      <div class="arrow">→</div>
+      <div class="node">Test &amp; Verify</div>
+    </div>
+    <div class="grid-2" style="margin-top: 1em;">
+      <div class="card">
+        <h3 class="cross">❌ Không kit</h3>
+        <ul style="font-size: 0.75em;">
+          <li>Prompt dài, lặp convention mỗi lần</li>
+          <li>AI đoán API → sai version</li>
+          <li>Mỗi dev có 1 style khác</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="check">✅ Có kit</h3>
+        <ul style="font-size: 0.75em;">
+          <li>Prompt ngắn: "thêm object pool"</li>
+          <li>Skill ép convention &amp; pattern đúng</li>
+          <li>Cả team consistency</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      Skill = system prompt + reference docs cho 1 domain hẹp.
+      Codex auto-activate skill khi keyword match.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 6: DEMO 1                               -->
+  <!-- ============================================ -->
+  <section class="demo-slide" data-background-color="#0a0d1a">
+    <div class="badge" style="border-color: var(--neon-purple); color: var(--neon-purple);">DEMO 1 · ~3 PHÚT</div>
+    <h1>Dùng kit trong project Unity/Cocos</h1>
+    <p class="intro">Cài Oh My Game Kit → mở 1 project game → Codex tự dùng skill phù hợp</p>
+    <div class="term" style="text-align: left;">
+      <div><span class="ps1">$</span> <span class="you">irm .../install.ps1 | iex</span></div>
+      <div class="ok">✓ Installed 80+ omg-* skills</div>
+      <div>&nbsp;</div>
+      <div><span class="ps1">~/my-unity-game $</span> codex</div>
+      <div><span class="you">▸ thêm object pool cho hệ thống spawn enemy</span></div>
+      <div><span class="ai">⠋ activating skill: omg-unity-game-patterns</span></div>
+      <div><span class="ai">⠙ reading existing Spawner.cs…</span></div>
+      <div><span class="ok">✓ created EnemyPool.cs theo convention team</span></div>
+    </div>
+    <p class="cta">▶ Switch sang terminal — chạy thật</p>
+    <aside class="notes">
+      DEMO LIVE:
+      1. Mở terminal, show `ls ~/.codex/skills` — có omg-* skills
+      2. cd vào unity project
+      3. codex → prompt "thêm object pool cho enemy spawner"
+      4. Watch Codex tự load skill, viết code đúng style
+      5. Show diff
+      Backup: nếu fail, có video record.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 7: DEMO 2                               -->
+  <!-- ============================================ -->
+  <section class="demo-slide" data-background-color="#0a0d1a">
+    <div class="badge" style="border-color: var(--neon-purple); color: var(--neon-purple);">DEMO 2 · ~3 PHÚT</div>
+    <h1>Fix bug / Add feature</h1>
+    <p class="intro">Codex investigate → root cause → fix → test → commit</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Input</h3>
+        <p>"Bug: signal bus thi thoảng miss event khi unsubscribe trong onDestroy"</p>
+      </div>
+      <div class="card">
+        <h3>Codex sẽ làm</h3>
+        <ol>
+          <li>Grep <code>signalBus</code> trong repo</li>
+          <li>Đọc skill <code>omg-cocos-signalbus</code></li>
+          <li>Tìm anti-pattern (lambda vs named)</li>
+          <li>Fix + viết test</li>
+        </ol>
+      </div>
+    </div>
+    <p class="cta">▶ Switch sang terminal — chạy thật</p>
+    <aside class="notes">
+      DEMO LIVE:
+      1. cd oh-my-game-kit hoặc 1 cocos project
+      2. codex → mô tả bug
+      3. Để Codex investigate (đừng cướp lời)
+      4. Show diff: nó tìm ra anti-pattern lambda → đổi sang named method
+      5. Chạy test
+      Key talking point: AI không guess, nó READ skill trước rồi mới fix.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 8: DEMO 3                               -->
+  <!-- ============================================ -->
+  <section class="demo-slide" data-background-color="#0a0d1a">
+    <div class="badge" style="border-color: var(--neon-purple); color: var(--neon-purple);">DEMO 3 · ~3 PHÚT</div>
+    <h1>Tạo skill mới</h1>
+    <p class="intro">Codex scaffold 1 skill <code>omg-cocos-xyz</code> theo conventions của kit</p>
+    <pre><code class="language-bash" data-trim>
+# Prompt
+▸ tạo skill omg-cocos-tutorial-overlay cho finger hint & arrow guide
+    </code></pre>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Codex sẽ tạo</h3>
+        <ul>
+          <li><code>modules/cocos-playable/skills/omg-cocos-tutorial-overlay/SKILL.md</code></li>
+          <li>Frontmatter chuẩn (name, description, triggers)</li>
+          <li>Reference docs trong <code>references/</code></li>
+          <li>Update <code>module.json</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Insight</h3>
+        <p>Skill MỚI tự nó cũng được sinh ra bằng AI — chỉ cần <code>omg-skill-creator</code> làm meta-template.</p>
+      </div>
+    </div>
+    <p class="cta">▶ Switch sang terminal — chạy thật</p>
+    <aside class="notes">
+      DEMO LIVE:
+      1. cd oh-my-game-kit
+      2. codex → "tạo skill omg-cocos-tutorial-overlay…"
+      3. Show file tree mới
+      4. Mở SKILL.md — check frontmatter + activation triggers
+      5. Đây là cách kit tự lớn lên: contributor không cần học format,
+         chỉ cần mô tả domain.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 9: Codex Tips                           -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Mẹo dùng Codex hiệu quả</h2>
+    <div class="grid-tips">
+      <div class="tip">
+        <div class="tip-num">01</div>
+        <h3>Scope nhỏ</h3>
+        <p>1 prompt = 1 task = 1 commit. Đừng "build cả game" — yêu cầu "thêm component spawner". Dễ review, dễ rollback.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-num">02</div>
+        <h3><code>AGENTS.md</code></h3>
+        <p>File ngữ cảnh project ở root repo. Codex auto-load: convention, kiến trúc, lệnh test. Viết 1 lần, dùng mãi.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-num">03</div>
+        <h3>Đính file bằng <code>@</code></h3>
+        <p>Prompt: <code>fix bug trong @Spawner.cs</code>. Codex không phải grep cả repo — nhanh và chính xác hơn.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-num">04</div>
+        <h3>Review diff luôn</h3>
+        <p>Codex show patch trước khi apply. Đừng accept mù — đọc kỹ, nhất là khi nó "tự ý" sửa file ngoài scope.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-num">05</div>
+        <h3>Gate lệnh nguy hiểm</h3>
+        <p>Set approval = <code>gated</code> cho <code>rm -rf</code>, <code>git push --force</code>, migration DB. Auto-approve chỉ với read/build/test.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-num">06</div>
+        <h3>Clear khi loạn</h3>
+        <p>Context dài → AI hallucinate, lặp sai. <code>/clear</code> + restart session. Đừng "cố vớt vát" — tốn thời gian hơn.</p>
+      </div>
+    </div>
+    <aside class="notes">
+      6 mẹo này tôi đúc kết sau ~6 tháng dùng Codex daily.
+      Nhấn mạnh tip 5 (gated) — đã thấy người để full-auto rồi Codex rm nhầm folder.
+      Tip 2: AGENTS.md là "system prompt" của riêng project — đầu tư 30 phút viết, tiết kiệm hàng giờ sau.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 10: SPOTLIGHT /goal                     -->
+  <!-- ============================================ -->
+  <section class="spotlight" data-background-gradient="radial-gradient(circle at 50% 30%, rgba(0,255,209,0.12), transparent 60%), radial-gradient(circle at 50% 70%, rgba(185,122,255,0.10), transparent 60%)">
+    <div class="new-badge">SPOTLIGHT · MỚI 30/04/2026</div>
+    <div class="cmd">/goal</div>
+    <div class="tagline">Đặt 1 mục tiêu → Codex chạy hàng giờ, có thể pause/resume</div>
+
+    <div class="syntax-list">
+      <div class="row">
+        <code>/goal &lt;mô tả&gt;</code>
+        <span class="desc">Khởi tạo persistent loop bám mục tiêu</span>
+      </div>
+      <div class="row">
+        <code>/goal</code>
+        <span class="desc">Xem trạng thái goal hiện tại (active/paused/done)</span>
+      </div>
+      <div class="row">
+        <code>/goal pause</code>
+        <span class="desc">Tạm dừng, giữ nguyên objective</span>
+      </div>
+      <div class="row">
+        <code>/goal resume</code>
+        <span class="desc">Tiếp tục từ chỗ vừa dừng</span>
+      </div>
+      <div class="row">
+        <code>/goal clear</code>
+        <span class="desc">Xoá goal, giải phóng session</span>
+      </div>
+    </div>
+
+    <div class="usecase-grid">
+      <div class="usecase">
+        <strong>🎮 Migration</strong>
+        Cocos 3.7 → 3.8 giữ tests green qua nhiều giờ
+      </div>
+      <div class="usecase">
+        <strong>⚙️ Refactor batch</strong>
+        Convert MonoBehaviour → DOTS ECS từng feature
+      </div>
+      <div class="usecase">
+        <strong>🔁 Loop retry</strong>
+        "Fix flaky test cho đến khi 100 lần liên tiếp green"
+      </div>
+    </div>
+
+    <p style="margin-top: 0.6em; font-size: 0.6em; color: var(--fg-soft);">
+      State lưu trong SQLite (1 goal / thread) · Token budget tuỳ chọn · Max 4000 chars (dài hơn → trỏ vào file)
+    </p>
+
+    <aside class="notes">
+      /goal mới có từ Codex v0.128.0 (30/04/2026).
+      Khác biệt cốt lõi với prompt thường: KHÔNG mất context khi Codex tự /clear giữa chừng,
+      objective được persist trong SQLite. Codex có thể chạy hours/days.
+      Demo gợi ý: "/goal migrate scene loader từ callback sang async/await, giữ tất cả tests green"
+      Lưu ý: vẫn cần gate destructive commands — /goal không tự miễn approval.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 11: Best Practices                      -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Best Practices</h2>
+    <ol>
+      <li><strong>Scope nhỏ</strong> mỗi prompt — 1 task = 1 commit, dễ review diff.</li>
+      <li><strong>Skill &gt; Prompt dài</strong> — nếu repeat 2+ lần, viết thành skill.</li>
+      <li><strong>Cho Codex chạy test</strong> — đừng chỉ generate code, để nó verify.</li>
+      <li><strong>Review diff như review PR</strong> — Codex sai vẫn sai, bạn là gatekeeper.</li>
+      <li><strong>Commit thường xuyên</strong> — checkpoint để rollback an toàn.</li>
+      <li><strong>Skill là tài sản team</strong> — sync vào repo, version control, PR review.</li>
+    </ol>
+    <aside class="notes">
+      Điểm 6 quan trọng nhất: skill là code, không phải config cá nhân.
+      Mỗi gotcha team gặp → cập nhật skill → tất cả member hưởng lợi.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 10: Pitfalls                            -->
+  <!-- ============================================ -->
+  <section>
+    <h2>Pitfalls — Tránh điều này</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="cross">❌ Tin tuyệt đối</h3>
+        <p style="font-size: 0.75em;">Codex hallucinate API name, nhất là package mới. <strong>Luôn chạy build/test.</strong></p>
+      </div>
+      <div class="card">
+        <h3 class="cross">❌ Prompt mơ hồ</h3>
+        <p style="font-size: 0.75em;">"Làm game đẹp hơn" → vô dụng. "Thêm screen shake khi hit enemy" → actionable.</p>
+      </div>
+      <div class="card">
+        <h3 class="cross">❌ Auto-merge</h3>
+        <p style="font-size: 0.75em;">Không bao giờ để Codex tự push thẳng <code>main</code>. PR + review luôn.</p>
+      </div>
+      <div class="card">
+        <h3 class="cross">❌ Bỏ qua skill update</h3>
+        <p style="font-size: 0.75em;">Sửa cùng 1 lỗi 2 lần = skill có gap. Update skill ngay, đừng "để sau".</p>
+      </div>
+    </div>
+    <aside class="notes">
+      Mỗi pitfall đều có thật trong quá trình tôi maintain oh-my-game-kit.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 11: Takeaways                           -->
+  <!-- ============================================ -->
+  <section data-background-gradient="radial-gradient(circle at 50% 30%, rgba(0,255,209,0.18), transparent 60%)">
+    <h2>3 điều mang về</h2>
+    <div class="grid-3" style="margin-top: 1.5em;">
+      <div class="card" style="text-align: center;">
+        <div class="big">1</div>
+        <h3>Codex = tay AI</h3>
+        <p style="font-size: 0.75em;">Không chỉ chat — đọc, sửa, chạy, test.</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="big">2</div>
+        <h3>Skill = context</h3>
+        <p style="font-size: 0.75em;">Đầu tư vào skill kit thay vì prompt dài.</p>
+      </div>
+      <div class="card" style="text-align: center;">
+        <div class="big">3</div>
+        <h3>Bạn vẫn là dev</h3>
+        <p style="font-size: 0.75em;">Review, test, ship. AI tăng tốc, không thay thế.</p>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 1.5em;">
+      <span class="pill cyan">REPO</span>
+      <code>github.com/tranvietanh0/oh-my-game-kit</code>
+    </p>
+    <aside class="notes">
+      Slide kết. Nhấn 3 ý. Gọi audience thử cài kit ngay tại chỗ nếu còn time.
+    </aside>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- Slide 12: Q&A                                 -->
+  <!-- ============================================ -->
+  <section data-background-color="#07070b">
+    <div style="text-align: center; margin-top: 2em;">
+      <h1 style="font-size: 4em;">Q &amp; A</h1>
+      <p style="margin-top: 1em; color: var(--neon-purple); font-size: 1.2em;">
+        Hỏi gì cũng được — kể cả "tại sao tên là <em>Oh My</em>"
+      </p>
+      <div style="margin-top: 3em; color: var(--fg-soft);">
+        <div><strong>Trần Việt Anh</strong></div>
+        <div><span class="handle" style="color: var(--neon-cyan);">@tranvietanh0</span></div>
+        <div style="margin-top: 0.5em; font-size: 0.8em;">
+          <code>github.com/tranvietanh0/oh-my-game-kit</code>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      Có thể prompt thử câu hỏi của audience ngay trên Codex — đỉnh cao demo.
+    </aside>
+  </section>
+
+</div>
+</div>
+
+<!-- Reveal.js scripts -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'convex',
+    transitionSpeed: 'default',
+    backgroundTransition: 'zoom',
+    controls: true,
+    progress: true,
+    center: false,
+    width: 1280,
+    height: 820,
+    margin: 0.04,
+    minScale: 0.2,
+    maxScale: 1.4,
+    autoAnimateDuration: 0.6,
+    autoAnimateEasing: 'ease-out',
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+
+  /* ──────────────────────────────────────────────── */
+  /* Floating particle layer (canvas)                  */
+  /* ──────────────────────────────────────────────── */
+  (function initParticles() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'particles-bg';
+    Object.assign(canvas.style, {
+      position: 'fixed', inset: '0', width: '100%', height: '100%',
+      pointerEvents: 'none', zIndex: '0', opacity: '0.55'
+    });
+    document.body.prepend(canvas);
+    const ctx = canvas.getContext('2d');
+    let w, h, particles;
+    const colors = ['#00ffd1', '#b97aff', '#ff5fa2'];
+
+    function resize() {
+      w = canvas.width  = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    function spawn() {
+      const count = Math.min(60, Math.floor((w * h) / 28000));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.8 + 0.4,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3,
+        c: colors[Math.floor(Math.random() * colors.length)],
+        a: Math.random() * 0.6 + 0.2
+      }));
+    }
+    function tick() {
+      ctx.clearRect(0, 0, w, h);
+      for (const p of particles) {
+        p.x += p.dx; p.y += p.dy;
+        if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+        if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+        ctx.beginPath();
+        ctx.fillStyle = p.c;
+        ctx.globalAlpha = p.a;
+        ctx.shadowColor = p.c;
+        ctx.shadowBlur = 8;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+      requestAnimationFrame(tick);
+    }
+    window.addEventListener('resize', () => { resize(); spawn(); });
+    resize(); spawn(); tick();
+  })();
+
+  /* ──────────────────────────────────────────────── */
+  /* Typing effect for terminal blocks                 */
+  /* ──────────────────────────────────────────────── */
+  Reveal.on('slidechanged', (event) => {
+    const term = event.currentSlide.querySelector('.term');
+    if (!term || term.dataset.typed === '1') return;
+    term.dataset.typed = '1';
+    const lines = Array.from(term.children);
+    lines.forEach(l => { l.dataset.original = l.innerHTML; l.innerHTML = ''; });
+    let i = 0;
+    function typeLine() {
+      if (i >= lines.length) return;
+      const line = lines[i];
+      const html = line.dataset.original;
+      line.innerHTML = html;
+      line.style.animation = 'fadeUp 0.25s ease-out';
+      i++;
+      setTimeout(typeLine, 220);
+    }
+    setTimeout(typeLine, 200);
+  });
+
+  /* Per-slide transition variation for demo slides    */
+  document.querySelectorAll('section[data-background-color="#0a0d1a"]').forEach(s => {
+    s.setAttribute('data-transition', 'zoom');
+  });
+</script>
+</body>
+</html>
